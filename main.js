@@ -1,104 +1,112 @@
 class MyMap {
+    constructor(iterable = null) {
+        this._keys = [];
+        this._values = [];
+
+        if (iterable === null || iterable === undefined) return;
+
+        if (typeof iterable[Symbol.iterator] !== 'function') {
+            let nameOfObject = `${typeof iterable + iterable instanceof Object ? '' : ' ' + iterable}`;
+            throw new TypeError(nameOfObject + 'is not iterable (cannot read property Symbol(Symbol.iterator))');
+        }
+        for (let entry of iterable) {
+            if (!(entry instanceof Object)) {
+                let nameOfObject = entry.toString();
+                throw new TypeError(`Iterator value ${nameOfObject} is not an entry object`)
+            }
+            let indexEntry = this._keys.indexOf(entry[0]);
+            indexEntry === -1 ? this._keys.push(entry[0]) : this._keys[indexEntry] = entry[0]
+            indexEntry === -1 ? this._values.push(entry[1]) : this._values[indexEntry] = entry[1]
+        }
+    }
+    static groupBy(items, callbackFn) {
+        const mapObj = new this();
+        items.forEach((item) => {
+            let keyValue = callbackFn(item);
+            mapObj.set(keyValue, item);
+        });
+        return mapObj;
+    }
+    get size() {
+        return this._keys.length;
+    }
+    set size(value) {
+        return value;
+    }
+    get [Symbol.toStringTag]() {
+        return 'MyMap';
+    }
+    clear() {
+        this._keys = [];
+        this._values = [];
+    }
+    delete(key) {
+        let indexKey = this._keys.indexOf(key);
+        if (indexKey !== -1) {
+            this._keys.splice(indexKey, 1);
+            this._values.splice(indexKey, 1);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    entries() {
+        let index = 0;
+        let entries = Array.from(
+            {length: this._keys.length},
+            (_, i) => [this._keys[i], this._values[i]]
+        )
+        return {
+            next: () => ({
+                value: index >= this._keys.length ? undefined : entries[index],
+                done: index++ >= this._keys.length
+            })
+        };
+    }
+    forEach(callbackFn, thisArg = null) {
+        for (let i = 0; i < this._keys.length; i++) {
+            callbackFn.call(thisArg || window, this._values[i], this._keys[i], this);
+        }
+    }
+    get(key) {
+        let indexKey = this._keys.indexOf(key);
+        return indexKey === -1 ? undefined : this._values[indexKey];
+    }
+    has(key) {
+        return this._keys.includes(key);
+    }
+    keys() {
+        let index = 0;
+        return {
+            next: () => ({
+                value: index >= this._keys.length ? undefined : this._keys[index],
+                done: index++ >= this._keys.length
+            })
+        };
+    }
+    set(key, value) {
+        let indexKey = this._keys.indexOf(key);
+        if (indexKey !== -1) {
+            this._values[indexKey] = value;
+        } else {
+            this._keys.push(key);
+            this._values.push(value);
+        }
+    }
+    values() {
+        let index = 0;
+        return {
+            next: () => ({
+                value: index >= this._keys.length ? undefined : this._values[index],
+                done: index++ >= this._keys.length
+            })
+        };
+    }
     [Symbol.iterator]() {
         return this.entries();
-    };
-    constructor(args = null) {
-        this.onlyKeys = [];
-        this.onlyValues = [];
-        if (Array.isArray(args)) {
-            for (let entries of args) {
-                if (!Array.isArray(entries) || entries.length != 2) continue;
-                this.onlyKeys.push(entries.at(0));
-                this.onlyValues.push(entries.at(1));
-            }
-        }
-    };
-    forEach(func) {
-        for (let i = 0; i < this.onlyKeys.length; i++) {
-            func(this.onlyValues.at(i), this.onlyKeys.at(i), this);
-        }
-    };
-
-    set(key, value) {
-        if (!this.onlyKeys.includes(key)) {
-            this.onlyKeys.push(key);
-            this.onlyValues.push(value);
-        }
-        this.size++;
-        return this;
-    };
-    get(key) {
-        if (this.onlyKeys.includes(key)) {
-            return this.onlyValues.get(this.onlyKeys.indexOf(key));
-        }
-        return undefined;
-    };
-    has(key) {
-        return this.onlyKeys.includes(key);
-    };
-    delete(key) {
-        if (this.onlyKeys.includes(key)) {
-            delete this.onlyValues[this.onlyKeys.indexOf(key)];
-            delete this.onlyKeys[key];
-        }
-        this.size--;
-        return this;
-    };
-    clear() {
-        this.onlyKeys.clear();
-        this.onlyValues.clear();
-        this.size = 0;
-        return this;
-    };
-    size = 0;
-    keys = () => ({
-        keys: this.onlyKeys,
-        [Symbol.iterator]() {
-            return {
-                keys: this.keys,
-                index: 0,
-                next() {
-                    if (this.index >= this.keys.length) {
-                        return { done: true };
-                    }
-                    return { done: false, value: this.keys.at(this.index++) };
-                }
-            };
-        }
-    });
-    values = () => ({
-        values: this.onlyValues,
-        [Symbol.iterator]() {
-            return {
-                values: this.values,
-                index: 0,
-                next() {
-                    if (this.index >= this.values.length) {
-                        return { done: true };
-                    }
-                    return { done: false, value: this.values.at(this.index++) };
-                }
-            };
-        }
-    });
-    entries = () => ({
-        keys: this.onlyKeys,
-        values: this.onlyValues,
-        [Symbol.iterator]() {
-            return {
-                keys: this.keys,
-                values: this.values,
-                index: 0,
-                next() {
-                    if (this.index >= this.keys.length) {
-                        return { done: true };
-                    }
-                    return { done: false, value: [this.keys.at(this.index), this.values.at(this.index++)] };
-                }
-            };
-        }
-    });
+    }
 }
+
 
 
 let recipeMap = new MyMap([
@@ -129,3 +137,4 @@ let recipeMap = new MyMap([
   for (let entry of recipeMap) { // то же самое, что и recipeMap.entries()
     console.log(entry); // огурец,500 (и так далее)
   }
+  
