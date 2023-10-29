@@ -6,12 +6,11 @@ class MyMap {
 
         if (typeof iterable[Symbol.iterator] !== 'function') {
             let nameOfObject = `${typeof iterable + iterable instanceof Object ? '' : ' ' + iterable}`;
-            throw new TypeError(nameOfObject + 'is not iterable (cannot read property Symbol(Symbol.iterator))');
+            throw new TypeError(`${nameOfObject} is not iterable (cannot read property ${Symbol.iterator})`);
         }
         for (let entry of iterable) {
             if (!(entry instanceof Object)) {
-                let nameOfObject = entry.toString();
-                throw new TypeError(`Iterator value ${nameOfObject} is not an entry object`)
+                throw new TypeError(`Iterator value ${entry} is not an entry object`)
             }
             let indexEntry = this._entries.indexOf(entry[0]);
             if (indexEntry === -1) {
