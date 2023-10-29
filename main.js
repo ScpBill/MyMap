@@ -109,34 +109,3 @@ class MyMap {
         return this.entries();
     }
 }
-
-
-let recipeMap = new MyMap([
-    ["огурец", 500],
-    ["помидор", 350],
-    ["лук",    50]
-  ]);
-  
-  // перебор по ключам (овощи)
-  for (let vegetable of recipeMap.keys()) {
-    console.log(vegetable); // огурец, помидор, лук
-  }
-  
-  // перебор по значениям (числа)
-  for (let amount of recipeMap.values()) {
-    console.log(amount); // 500, 350, 50
-  }
-  recipeMap.forEach((value, key, map) => {
-    console.log(`${key}: ${value}`); // огурец: 500 и так далее
-  });
-  let map = new Map([
-    ['1',  'str1'],
-    [1,    'num1'],
-    [true, 'bool1']
-  ]);
-  console.log(map.get('1'))
-  // перебор по элементам в формате [ключ, значение]
-  for (let entry of recipeMap) { // то же самое, что и recipeMap.entries()
-    console.log(entry); // огурец,500 (и так далее)
-  }
-  
