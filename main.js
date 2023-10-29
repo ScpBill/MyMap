@@ -14,9 +14,9 @@ class MyMap {
             }
             let indexEntry = this._entries.indexOf(entry[0]);
             if (indexEntry === -1) {
-                this._entries.push([entry[0], entry[1]]);
+                this._entries.push({ key: entry[0], value: entry[1] });
             } else {
-                this._entries[indexEntry][1] = entry[1];
+                this._entries[indexEntry].value = entry[1];
             }
         }
     }
@@ -41,7 +41,7 @@ class MyMap {
         this._entries = [];
     }
     delete(key) {
-        let indexKey = this._entries.findIndex(x => x[0] == key);
+        let indexKey = this._entries.findIndex(x => x.key == key);
         if (indexKey !== -1) {
             this._entries.splice(indexKey, 1);
             return true;
@@ -52,23 +52,26 @@ class MyMap {
     entries() {
         let index = 0;
         return {
+            [Symbol.iterator]() {
+                return this;
+            },
             next: () => ({
-                value: index >= this._entries.length ? undefined : this._entries[index],
+                value: index >= this._entries.length ? undefined : [this._entries[index].key, this._entries[index].value],
                 done: index++ >= this._entries.length
             })
         };
     }
     forEach(callbackFn, thisArg = null) {
         for (let i = 0; i < this._entries.length; i++) {
-            callbackFn.call(thisArg || globalThis, this._entries[i][1], this._entries[i][0], this);
+            callbackFn.call(thisArg || globalThis, this._entries[i].value, this._entries[i].key, this);
         }
     }
     get(key) {
-        let indexKey = this._entries.findIndex(x => x[0] == key);
-        return indexKey === -1 ? undefined : this._entries[indexKey][1];
+        let indexKey = this._entries.findIndex(x => x.key == key);
+        return indexKey === -1 ? undefined : this._entries[indexKey].value;
     }
     has(key) {
-        return this._entries.some(x => x[0] == key);
+        return this._entries.some(x => x.key == key);
     }
     keys() {
         let index = 0;
@@ -77,17 +80,17 @@ class MyMap {
                 return this;
             },
             next: () => ({
-                value: index >= this._entries.length ? undefined : this._entries[index][0],
+                value: index >= this._entries.length ? undefined : this._entries[index].key,
                 done: index++ >= this._entries.length
             })
         };
     }
     set(key, value) {
-        let indexKey = this._entries.findIndex(x => x[0] == key);
+        let indexKey = this._entries.findIndex(x => x.key == key);
         if (indexKey !== -1) {
-            this._entries[indexKey][1] = value;
+            this._entries[indexKey].value = value;
         } else {
-            this._entries.push([key, value]);
+            this._entries.push({ key, value });
         }
     }
     values() {
@@ -97,7 +100,7 @@ class MyMap {
                 return this;
             },
             next: () => ({
-                value: index >= this._entries.length ? undefined : this._entries[index][1],
+                value: index >= this._entries.length ? undefined : this._entries[index].value,
                 done: index++ >= this._entries.length
             })
         };
