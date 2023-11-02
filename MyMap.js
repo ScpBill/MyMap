@@ -1,7 +1,6 @@
 class MyMap {
+    #entries = [];
     constructor(iterable = null) {
-        this._entries = [];
-
         if (iterable === null || iterable === undefined) return;
 
         if (typeof iterable[Symbol.iterator] !== 'function') {
@@ -12,11 +11,11 @@ class MyMap {
             if (!(entry instanceof Object)) {
                 throw new TypeError(`Iterator value ${entry} is not an entry object`)
             }
-            let indexEntry = this._entries.indexOf(entry[0]);
+            let indexEntry = this.#entries.indexOf(entry[0]);
             if (indexEntry === -1) {
-                this._entries.push({ key: entry[0], value: entry[1] });
+                this.#entries.push({ key: entry[0], value: entry[1] });
             } else {
-                this._entries[indexEntry].value = entry[1];
+                this.#entries[indexEntry].value = entry[1];
             }
         }
     }
@@ -29,7 +28,7 @@ class MyMap {
         return mapObj;
     }
     get size() {
-        return this._entries.length;
+        return this.#entries.length;
     }
     set size(value) {
         return value;
@@ -38,12 +37,12 @@ class MyMap {
         return 'MyMap';
     }
     clear() {
-        this._entries = [];
+        this.#entries = [];
     }
     delete(key) {
-        let indexKey = this._entries.findIndex(x => x.key == key);
+        let indexKey = this.#entries.findIndex(x => x.key == key);
         if (indexKey !== -1) {
-            this._entries.splice(indexKey, 1);
+            this.#entries.splice(indexKey, 1);
             return true;
         } else {
             return false;
@@ -56,22 +55,22 @@ class MyMap {
                 return this;
             },
             next: () => ({
-                value: index >= this._entries.length ? undefined : [this._entries[index].key, this._entries[index].value],
-                done: index++ >= this._entries.length
+                value: index >= this.#entries.length ? undefined : [this.#entries[index].key, this.#entries[index].value],
+                done: index++ >= this.#entries.length
             })
         };
     }
     forEach(callbackFn, thisArg = null) {
-        for (let i = 0; i < this._entries.length; i++) {
-            callbackFn.call(thisArg || globalThis, this._entries[i].value, this._entries[i].key, this);
+        for (let i = 0; i < this.#entries.length; i++) {
+            callbackFn.call(thisArg || globalThis, this.#entries[i].value, this.#entries[i].key, this);
         }
     }
     get(key) {
-        let indexKey = this._entries.findIndex(x => x.key == key);
-        return indexKey === -1 ? undefined : this._entries[indexKey].value;
+        let indexKey = this.#entries.findIndex(x => x.key == key);
+        return indexKey === -1 ? undefined : this.#entries[indexKey].value;
     }
     has(key) {
-        return this._entries.some(x => x.key == key);
+        return this.#entries.some(x => x.key == key);
     }
     keys() {
         let index = 0;
@@ -80,17 +79,17 @@ class MyMap {
                 return this;
             },
             next: () => ({
-                value: index >= this._entries.length ? undefined : this._entries[index].key,
-                done: index++ >= this._entries.length
+                value: index >= this.#entries.length ? undefined : this.#entries[index].key,
+                done: index++ >= this.#entries.length
             })
         };
     }
     set(key, value) {
-        let indexKey = this._entries.findIndex(x => x.key == key);
+        let indexKey = this.#entries.findIndex(x => x.key == key);
         if (indexKey !== -1) {
-            this._entries[indexKey].value = value;
+            this.#entries[indexKey].value = value;
         } else {
-            this._entries.push({ key, value });
+            this.#entries.push({ key, value });
         }
     }
     values() {
@@ -100,8 +99,8 @@ class MyMap {
                 return this;
             },
             next: () => ({
-                value: index >= this._entries.length ? undefined : this._entries[index].value,
-                done: index++ >= this._entries.length
+                value: index >= this.#entries.length ? undefined : this.#entries[index].value,
+                done: index++ >= this.#entries.length
             })
         };
     }
