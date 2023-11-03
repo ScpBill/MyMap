@@ -48,17 +48,10 @@ class MyMap {
             return false;
         }
     }
-    entries() {
-        let index = 0;
-        return {
-            [Symbol.iterator]() {
-                return this;
-            },
-            next: () => ({
-                value: index >= this.#entries.length ? undefined : [this.#entries[index].key, this.#entries[index].value],
-                done: index++ >= this.#entries.length
-            })
-        };
+    *entries() {
+        for (let entry of this.#entries) {
+            yield entry;
+        }
     }
     forEach(callbackFn, thisArg = null) {
         for (let i = 0; i < this.#entries.length; i++) {
@@ -72,17 +65,10 @@ class MyMap {
     has(key) {
         return this.#entries.some(x => x.key == key);
     }
-    keys() {
-        let index = 0;
-        return {
-            [Symbol.iterator]() {
-                return this;
-            },
-            next: () => ({
-                value: index >= this.#entries.length ? undefined : this.#entries[index].key,
-                done: index++ >= this.#entries.length
-            })
-        };
+    *keys() {
+        for (let entry of this.#entries) {
+            yield entry.key;
+        }
     }
     set(key, value) {
         let indexKey = this.#entries.findIndex(x => x.key == key);
@@ -93,18 +79,11 @@ class MyMap {
         }
     }
     values() {
-        let index = 0;
-        return {
-            [Symbol.iterator]() {
-                return this;
-            },
-            next: () => ({
-                value: index >= this.#entries.length ? undefined : this.#entries[index].value,
-                done: index++ >= this.#entries.length
-            })
-        };
+        for (let entry of this.#entries) {
+            yield entry.value;
+        }
     }
-    [Symbol.iterator]() {
-        return this.entries();
+    *[Symbol.iterator]() {
+        yield* this.entries();
     }
 }
