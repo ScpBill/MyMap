@@ -19,28 +19,20 @@ class MyMap {
             }
         }
     }
-    static groupBy(items, callbackFn) {
-        const mapObj = new this();
-        items.forEach((item) => {
-            let keyValue = callbackFn(item);
-            mapObj.set(keyValue, item);
-        });
-        return mapObj;
-    }
     get size() {
         return this.#entries.length;
     }
     set size(value) {
         return value;
     }
-    get [Symbol.toStringTag]() {
-        return 'MyMap';
+    *[Symbol.iterator]() {
+        yield* this.entries();
     }
     clear() {
         this.#entries = [];
     }
     delete(key) {
-        let indexKey = this.#entries.findIndex(x => x.key == key);
+        let indexKey = this.#entries.findIndex(x => x.key === key);
         if (indexKey !== -1) {
             this.#entries.splice(indexKey, 1);
             return true;
@@ -54,13 +46,21 @@ class MyMap {
         }
     }
     forEach(callbackFn, thisArg = null) {
-        for (let i = 0; i < this.#entries.length; i++) {
-            callbackFn.call(thisArg || globalThis, this.#entries[i].value, this.#entries[i].key, this);
+        for (const entry of this.#entries) {
+            callbackFn.call(thisArg, entry.key, entry.value, this);
         }
     }
     get(key) {
         let indexKey = this.#entries.findIndex(x => x.key == key);
         return indexKey === -1 ? undefined : this.#entries[indexKey].value;
+    }
+    static groupBy(items, callbackFn) {
+        const mapObj = new this();
+        items.forEach((item) => {
+            let keyValue = callbackFn(item);
+            mapObj.set(keyValue, item);
+        });
+        return mapObj;
     }
     has(key) {
         return this.#entries.some(x => x.key == key);
@@ -83,7 +83,7 @@ class MyMap {
             yield entry.value;
         }
     }
-    *[Symbol.iterator]() {
-        yield* this.entries();
+    get [Symbol.toStringTag]() {
+        return 'MyMap';
     }
 }
