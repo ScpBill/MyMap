@@ -49,7 +49,7 @@ class MyMap {
         }
     }
     *entries() {
-        for (let entry of this.#entries) {
+        for (const entry of this.#entries) {
             yield entry;
         }
     }
@@ -66,7 +66,7 @@ class MyMap {
         return this.#entries.some(x => x.key == key);
     }
     *keys() {
-        for (let entry of this.#entries) {
+        for (const entry of this.#entries) {
             yield entry.key;
         }
     }
@@ -79,7 +79,7 @@ class MyMap {
         }
     }
     values() {
-        for (let entry of this.#entries) {
+        for (const entry of this.#entries) {
             yield entry.value;
         }
     }
